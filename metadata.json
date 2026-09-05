@@ -1,0 +1,6 @@
+{
+  "name": "SIDYA - Distribusi Perlengkapan Haji & Umroh",
+  "description": "Platform resmi ekosistem distribusi perlengkapan haji dan umroh untuk Agen, KBIH, Seller, dan Jamaah oleh PT Sidya Sadaya Sejahtera.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
