@@ -8,6 +8,14 @@ export interface BoardMember {
   linkedin?: string;
   email?: string;
   order: number;
+  // Org chart specific fields
+  parentId?: string; // ID of direct superior (null for CEO/top level)
+  level?: number; // 0 = CEO, 1 = Direct reports, 2 = Sub-reports, etc
+  department?: string; // Department/division name
+}
+
+export interface OrgChartNode extends BoardMember {
+  children: OrgChartNode[];
 }
 
 export interface Article {
@@ -121,4 +129,29 @@ export interface SidyaData {
   apps: AppShowcaseData;
   catalog: CatalogItem[];
   contact: ContactInfo;
+}
+
+// New org chart types for Struktur integration
+export type NodeColorTheme = 'pink' | 'orange' | 'green' | 'blue';
+export type ViewMode = 'image-literal' | 'realistic';
+export type FilterDepartment = 'all' | 'executive' | 'management' | 'operations' | 'sales';
+
+export interface EmployeeNode {
+  id: string;
+  code: string;
+  placeholderName: string;
+  roleLabel: string;
+  realisticName: string;
+  officialTitle: string;
+  department: string;
+  level: number;
+  colorTheme: NodeColorTheme;
+  avatarUrl: string;
+  avatarKey?: string;
+  email: string;
+  phone: string;
+  location: string;
+  responsibilities: string[];
+  parentId?: string;
+  childrenIds: string[];
 }
