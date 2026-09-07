@@ -21,9 +21,9 @@ if ($is_localhost) {
 } else {
     // HOSTINGER PRODUCTION
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'u75166247_sidya_orgchart');
-    define('DB_PASS', '@P4g3r4jl');
-    define('DB_NAME', 'u75166247_sidya_orgchart');
+    define('DB_USER', 'u759166247_sidya_orgchart');  // FIXED: 247 not 24
+    define('DB_PASS', 'SidyaAdmin2024!');
+    define('DB_NAME', 'u759166247_sidya_orgchart');  // FIXED: 247 not 24
 }
 
 // Create connection with error suppression

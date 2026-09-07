@@ -7,6 +7,12 @@ import { CatalogItem } from '../types';
 
 // Determine API base URL based on environment
 const getApiBaseUrl = (): string => {
+  // Check if VITE_API_URL is set (for Vercel deployment pointing to Hostinger API)
+  const envApiUrl = import.meta.env.VITE_API_URL;
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+  
   const hostname = window.location.hostname;
   const port = window.location.port;
   
