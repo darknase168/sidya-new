@@ -1,0 +1,6 @@
+{
+  "name": "Struktur Organisasi Perusahaan",
+  "description": "Landing page struktur organisasi perusahaan interaktif dengan bagan hierarki visual modern dan detail anggota tim.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -104,28 +104,7 @@ export const initialSidyaData: SidyaData = {
     }
   },
   boardMembers: [
-    {
-      id: 'board-1',
-      name: 'H. Muhammad Faisal Sadaya, S.E., M.M.',
-      title: 'Komisaris Utama',
-      category: 'komisaris',
-      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
-      bio: 'Praktisi bisnis logistik dan pemerhati ekosistem haji-umroh nasional dengan pengalaman lebih dari 20 tahun membina kemitraan bersama ratusan KBIH dan travel umroh.',
-      linkedin: 'https://linkedin.com',
-      email: 'faisal@sidya.co.id',
-      order: 1
-    },
-    {
-      id: 'board-2',
-      name: 'Dra. Hj. Siti Rahmah Nurul Aini',
-      title: 'Komisaris Independen',
-      category: 'komisaris',
-      photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
-      bio: 'Pakar tata kelola perusahaan (GCG) dan pengawas mutu syariah dengan latar belakang kepengurusan asosiasi biro perjalanan haji dan umroh nusantara.',
-      linkedin: 'https://linkedin.com',
-      email: 'siti.rahmah@sidya.co.id',
-      order: 2
-    },
+    // Level 0 - CEO (Top)
     {
       id: 'board-3',
       name: 'Ir. Ahmad Zulkarnain, M.B.A.',
@@ -135,8 +114,13 @@ export const initialSidyaData: SidyaData = {
       bio: 'Memimpin transformasi digital PT Sidya Sadaya Sejahtera dan ekspansi rantai pasok perlengkapan ibadah dengan visi efisiensi terintegrasi dari pabrik ke jamaah.',
       linkedin: 'https://linkedin.com',
       email: 'ahmad.zulkarnain@sidya.co.id',
-      order: 3
+      order: 1,
+      parentId: undefined,
+      level: 0,
+      department: 'Presidensi'
     },
+
+    // Level 1 - Direct Reports to CEO
     {
       id: 'board-4',
       name: 'H. Denny Hendrawan, S.T.',
@@ -146,7 +130,10 @@ export const initialSidyaData: SidyaData = {
       bio: 'Penanggung jawab alur pergudangan nasional, manajemen vendor manufaktur koper, serta ketepatan dispatching barang ke asrama haji jelang musim haji raya.',
       linkedin: 'https://linkedin.com',
       email: 'denny.h@sidya.co.id',
-      order: 4
+      order: 2,
+      parentId: 'board-3',
+      level: 1,
+      department: 'Operasional & Logistik'
     },
     {
       id: 'board-5',
@@ -157,7 +144,10 @@ export const initialSidyaData: SidyaData = {
       bio: 'Arsitek di balik Sidya Mobile dan Sidya Desktop Suite, berpengalaman dalam enterprise ERP, barcode scanning logistic, dan customer-facing mobile UX.',
       linkedin: 'https://linkedin.com',
       email: 'rizky.tech@sidya.co.id',
-      order: 5
+      order: 3,
+      parentId: 'board-3',
+      level: 1,
+      department: 'Teknologi & Inovasi'
     },
     {
       id: 'board-6',
@@ -168,8 +158,13 @@ export const initialSidyaData: SidyaData = {
       bio: 'Mengelola tata kelola finansial, permodalan vendor lokal, pembiayaan syariah mitra KBIH, serta skema pembayaran berjangka bagi biro travel.',
       linkedin: 'https://linkedin.com',
       email: 'nabila.safitri@sidya.co.id',
-      order: 6
+      order: 4,
+      parentId: 'board-3',
+      level: 1,
+      department: 'Keuangan & Kemitraan'
     },
+
+    // Level 2 - Reports to Directors
     {
       id: 'board-7',
       name: 'Bambang Kusuma, S.Sos.',
@@ -179,7 +174,10 @@ export const initialSidyaData: SidyaData = {
       bio: 'Fasilitator utama pelayanan lebih dari 300 KBIH se-Indonesia dalam penyesuaian kebutuhan paket koper kustom dan administrasi manasik.',
       linkedin: 'https://linkedin.com',
       email: 'bambang.k@sidya.co.id',
-      order: 7
+      order: 5,
+      parentId: 'board-6',
+      level: 2,
+      department: 'Hubungan Kemitraan'
     },
     {
       id: 'board-8',
@@ -190,7 +188,40 @@ export const initialSidyaData: SidyaData = {
       bio: 'Mengawasi presisi cetak logo sablon/bordir pada koper, keseragaman warna kain batik, dan uji ketahanan resleting serta roda koper haji berstandar maskapai.',
       linkedin: 'https://linkedin.com',
       email: 'fathiyah@sidya.co.id',
-      order: 8
+      order: 6,
+      parentId: 'board-4',
+      level: 2,
+      department: 'Kontrol Kualitas'
+    },
+
+    // Commissioners (Non-Operational)
+    {
+      id: 'board-1',
+      name: 'H. Muhammad Faisal Sadaya, S.E., M.M.',
+      title: 'Komisaris Utama',
+      category: 'komisaris',
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+      bio: 'Praktisi bisnis logistik dan pemerhati ekosistem haji-umroh nasional dengan pengalaman lebih dari 20 tahun membina kemitraan bersama ratusan KBIH dan travel umroh.',
+      linkedin: 'https://linkedin.com',
+      email: 'faisal@sidya.co.id',
+      order: 7,
+      parentId: undefined,
+      level: 0,
+      department: 'Dewan Komisaris'
+    },
+    {
+      id: 'board-2',
+      name: 'Dra. Hj. Siti Rahmah Nurul Aini',
+      title: 'Komisaris Independen',
+      category: 'komisaris',
+      photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
+      bio: 'Pakar tata kelola perusahaan (GCG) dan pengawas mutu syariah dengan latar belakang kepengurusan asosiasi biro perjalanan haji dan umroh nusantara.',
+      linkedin: 'https://linkedin.com',
+      email: 'siti.rahmah@sidya.co.id',
+      order: 8,
+      parentId: undefined,
+      level: 0,
+      department: 'Dewan Komisaris'
     }
   ],
   apps: {
@@ -364,10 +395,10 @@ export const initialSidyaData: SidyaData = {
     }
   ],
   contact: {
-    phone: '+62 21 8904 2231',
+    phone: '0811866477',
     whatsapp: '+62 812 8899 7439',
     email: 'kemitraan@sidya.co.id',
-    address: 'Gedung Graha Sadaya Lt. 4, Jl. Raya Mabes Hankam No. 88, Bambu Apus, Cipayung, Jakarta Timur 13890',
+    address: 'Jl. Anggur II No.28, RT.12/RW.6, Cipete Sel., Kec. Cilandak, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12410, Indonesia',
     operatingHours: 'Senin - Sabtu: 08.00 - 17.00 WIB (Layanan Siaga Haji 24/7 Selama Musim Operasional)'
   }
 };

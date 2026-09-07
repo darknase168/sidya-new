@@ -1,21 +1,26 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { EmployeeNode, ViewMode, FilterDepartment } from '../types';
-import { INITIAL_ORG_DATA } from '../data/orgData';
-import { useAuth } from '../context/AuthContext';
-import { Header } from '../components/struktur/Header';
-import { OrgChartTree } from '../components/struktur/OrgChartTree';
-import { MemberDetailModal } from '../components/struktur/MemberDetailModal';
-import { syncPengurusData, savePengurusToDatabase } from '../services/pengursService';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { INITIAL_ORG_DATA } from './data/orgData';
+import { EmployeeNode, ViewMode, FilterDepartment, NodeColorTheme } from './types';
+import { Header } from './components/Header';
+import { OrgChartTree } from './components/OrgChartTree';
+import { MemberDetailModal } from './components/MemberDetailModal';
+import { LegendBar } from './components/LegendBar';
+import { CompanyStats } from './components/CompanyStats';
+import {
+  Sparkles,
+  Info,
+  Maximize2,
+  Minimize2,
+  RefreshCw,
+  Share2,
+  Download,
+  Check,
+} from 'lucide-react';
 
-export default function PengurusPage() {
-  const { isLoggedIn } = useAuth();
-  const [isSyncing, setIsSyncing] = useState(false);
-  
-  // Initialize nodes from localStorage or database
+export default function App() {
   const [nodes, setNodes] = useState<EmployeeNode[]>(() => {
     try {
       const saved = localStorage.getItem('org_chart_nodes_data_v2');
-      
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -24,71 +29,28 @@ export default function PengurusPage() {
       }
     } catch (e) {
       console.error('Error loading saved nodes', e);
-      localStorage.removeItem('org_chart_nodes_data_v2');
     }
     return INITIAL_ORG_DATA;
   });
-  
-  // Sync with database on page load
-  useEffect(() => {
-    const loadFromDatabase = async () => {
-      setIsSyncing(true);
-      try {
-        const dbNodes = await syncPengurusData();
-        if (dbNodes && dbNodes.length > 0) {
-          setNodes(dbNodes);
-          console.log('✓ Synced pengurus from database');
-        } else {
-          console.log('No database data, using localStorage');
-        }
-      } catch (error) {
-        console.warn('Failed to sync from database, using localStorage:', error);
-        // Continue with localStorage data
-      } finally {
-        setIsSyncing(false);
-      }
-    };
-    
-    loadFromDatabase();
-  }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
-      // Always save to localStorage for offline access
       localStorage.setItem('org_chart_nodes_data_v2', JSON.stringify(nodes));
-      
-      // Also save to database if user is logged in (auto-sync)
-      if (isLoggedIn) {
-        const autoSave = async () => {
-          try {
-            await savePengurusToDatabase(nodes);
-            console.log('✓ Auto-saved pengurus to database');
-          } catch (error) {
-            console.warn('Auto-save to database failed:', error);
-            // Continue anyway - data is still in localStorage
-          }
-        };
-        
-        // Debounce auto-save (wait 2 seconds after last change)
-        const timeoutId = setTimeout(autoSave, 2000);
-        return () => clearTimeout(timeoutId);
-      }
     } catch (e) {
       console.error('Error saving nodes', e);
     }
-  }, [nodes, isLoggedIn]);
-
+  }, [nodes]);
   const [viewMode, setViewMode] = useState<ViewMode>('image-literal');
-  const [companyName, setCompanyName] = useState('PT Sidya Sadaya Sejahtera');
+  const [companyName, setCompanyName] = useState('PT Inovasi Industri Nusantara');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDept, setFilterDept] = useState<FilterDepartment>('all');
-  const [activeTheme, setActiveTheme] = useState<any>(null);
+  const [activeTheme, setActiveTheme] = useState<NodeColorTheme | null>(null);
   const [selectedNode, setSelectedNode] = useState<EmployeeNode | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [copiedLink, setCopiedLink] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Filtered / Highlighted Nodes calculation
   const highlightedIds = useMemo(() => {
@@ -132,34 +94,6 @@ export default function PengurusPage() {
     setSelectedNode(updatedNode);
   };
 
-  const handleDeleteNode = (nodeId: string) => {
-    if (window.confirm('Hapus anggota organisasi ini?')) {
-      setNodes((prev) => prev.filter((n) => n.id !== nodeId));
-      setSelectedNode(null);
-    }
-  };
-
-  const handleAddNode = () => {
-    const newNode: EmployeeNode = {
-      id: `emp-${Date.now()}`,
-      code: 'NEW',
-      placeholderName: 'NAME LASTNAME',
-      roleLabel: '( NEW ROLE )',
-      realisticName: 'Nama Baru',
-      officialTitle: 'Jabatan Baru',
-      department: 'Divisi Baru',
-      level: 4,
-      colorTheme: 'blue',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
-      email: 'baru@example.com',
-      phone: '+62 8XX-XXXX-XXXX',
-      location: 'Lokasi Baru',
-      responsibilities: ['Tanggung jawab 1', 'Tanggung jawab 2'],
-      childrenIds: [],
-    };
-    setNodes((prev) => [...prev, newNode]);
-  };
-
   const handleResetData = () => {
     if (window.confirm('Kembalikan semua data ke versi default bagan diagram?')) {
       try {
@@ -199,24 +133,6 @@ export default function PengurusPage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Admin Add Button */}
-      {isLoggedIn && (
-        <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-2">
-          {isSyncing && (
-            <div className="px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium shadow-lg animate-pulse">
-              Syncing database...
-            </div>
-          )}
-          <button
-            onClick={handleAddNode}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg transition-all"
-            title="Tambah anggota organisasi baru"
-          >
-            + Tambah Anggota
-          </button>
-        </div>
-      )}
-
       {/* Top Header */}
       <Header
         viewMode={viewMode}
@@ -233,14 +149,72 @@ export default function PengurusPage() {
         totalMembers={nodes.length}
         companyName={companyName}
         onUpdateCompanyName={setCompanyName}
-        isLoggedIn={isLoggedIn}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex flex-col">
+        {/* Banner Notice / Description */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 mb-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 flex-shrink-0">
+              <Info className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                Landing Page Visual Struktur Organisasi Perusahaan
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Diagram dibuat persis sesuai layout gambar: 1 CEO, 2 Manajer, 4 Supervisor (Foreman A/B & Sales Officer A/B), serta Staff (4 Workers & 2 Salers).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end md:self-auto flex-shrink-0">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300 rounded-xl transition-colors shadow-xs"
+            >
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-slate-500" />}
+              <span>{copiedLink ? 'Tautan Disalin' : 'Bagikan'}</span>
+            </button>
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300 rounded-xl transition-colors shadow-xs hidden sm:flex"
+              title={isFullscreen ? 'Keluar Layar Penuh' : 'Layar Penuh'}
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={handleResetData}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200/80 rounded-xl transition-colors"
+              title="Kembalikan data ke awal"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Department Stats Overview */}
+        <CompanyStats
+          nodes={nodes}
+          onFilterDivision={(kw) => {
+            if (kw === 'all') {
+              setFilterDept('all');
+            } else if (kw === 'Eksekutif') {
+              setFilterDept('executive');
+            } else if (kw === 'Operasional') {
+              setFilterDept('operations');
+            } else if (kw === 'Pemasaran') {
+              setFilterDept('sales');
+            }
+          }}
+        />
 
         {/* Legend Bar for Color Codes */}
-        {/* Hidden - Legend removed per user request */}
+        <div className="mb-6">
+          <LegendBar activeTheme={activeTheme} onSelectTheme={setActiveTheme} />
+        </div>
 
         {/* Visual Chart Canvas */}
         <div
@@ -280,6 +254,37 @@ export default function PengurusPage() {
             Klik anggota untuk membuka detail & edit
           </div>
         </div>
+
+        {/* Explanatory Guide Section */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+            <h4 className="text-xs font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-xs" />
+              Tingkat 1: Eksekutif (CEO)
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Memegang wewenang tertinggi dalam menetapkan kebijakan korporasi, alokasi anggaran modal, dan mengkoordinasikan para manajer operasional dan penjualan.
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+            <h4 className="text-xs font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-xs" />
+              Tingkat 2: Manajer Divisi
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Dua pilar manajerial: Manajer Operasional mengelola seluruh pabrik dan tim lini produksi, sedangkan Manajer Komersial memimpin target pendapatan bisnis.
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+            <h4 className="text-xs font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs" />
+              Tingkat 3 & 4: Supervisor & Pelaksana
+            </h4>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Foreman A & B memimpin para Operator/Workers teknis di pabrik, sedangkan Sales Officer A & B memimpin representatif Account Executive / Salers di lapangan.
+            </p>
+          </div>
+        </div>
       </main>
 
       {/* Footer */}
@@ -314,7 +319,6 @@ export default function PengurusPage() {
           onClose={() => setSelectedNode(null)}
           onSelectNode={(node) => setSelectedNode(node)}
           onUpdateNode={handleUpdateNode}
-          onDeleteNode={handleDeleteNode}
         />
       )}
     </div>

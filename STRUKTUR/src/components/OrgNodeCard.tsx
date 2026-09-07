@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmployeeNode, ViewMode } from '../../types';
+import { EmployeeNode, ViewMode } from '../types';
 import { EmployeeAvatar } from './EmployeeAvatar';
 
 interface OrgNodeCardProps {
@@ -26,14 +26,6 @@ export const OrgNodeCard: React.FC<OrgNodeCardProps> = ({
       shadowColor: 'shadow-rose-500/20',
       activeRing: 'ring-rose-500',
       glow: 'from-rose-500 to-pink-500',
-    },
-    gold: {
-      ringGradient: 'from-yellow-500 via-yellow-600 to-amber-600',
-      pinColor: '#d97706',
-      badgeBg: 'bg-gradient-to-r from-yellow-600 to-amber-700',
-      shadowColor: 'shadow-yellow-500/20',
-      activeRing: 'ring-yellow-500',
-      glow: 'from-yellow-500 to-amber-500',
     },
     orange: {
       ringGradient: 'from-amber-500 via-orange-500 to-orange-600',
@@ -64,12 +56,11 @@ export const OrgNodeCard: React.FC<OrgNodeCardProps> = ({
   const isLevel4 = node.level === 4;
   const isCeo = node.level === 1;
   const isManager = node.level === 2;
-  const isCommissioner = node.level === 0;
 
-  // Sizes tailored to hierarchy levels - BALANCED
-  const avatarSize = isCommissioner ? 85 : isCeo ? 90 : isManager ? 80 : isLevel4 ? 64 : 76;
-  const outerCircleSize = isCommissioner ? 'w-[105px] h-[105px]' : isCeo ? 'w-[110px] h-[110px]' : isManager ? 'w-[100px] h-[100px]' : isLevel4 ? 'w-[80px] h-[80px]' : 'w-[92px] h-[92px]';
-  const badgeWidth = isCommissioner ? 'w-40 sm:w-44' : isCeo ? 'w-44 sm:w-48' : isManager ? 'w-40 sm:w-44' : isLevel4 ? 'w-24 sm:w-28' : 'w-36 sm:w-40';
+  // Sizes tailored to hierarchy levels
+  const avatarSize = isCeo ? 92 : isManager ? 82 : isLevel4 ? 64 : 76;
+  const outerCircleSize = isCeo ? 'w-[104px] h-[104px]' : isManager ? 'w-[94px] h-[94px]' : isLevel4 ? 'w-[74px] h-[74px]' : 'w-[86px] h-[86px]';
+  const badgeWidth = isCeo ? 'w-44 sm:w-48' : isManager ? 'w-40 sm:w-44' : isLevel4 ? 'w-24 sm:w-28' : 'w-36 sm:w-40';
 
   const displayName = viewMode === 'image-literal' ? node.placeholderName : node.realisticName;
   const displayRole = viewMode === 'image-literal' ? node.roleLabel : node.officialTitle;
@@ -93,11 +84,11 @@ export const OrgNodeCard: React.FC<OrgNodeCardProps> = ({
 
         {/* Outer Circular Gradient Ring */}
         <div
-          className={`relative rounded-full bg-gradient-to-tr ${themeConfig.ringGradient} ${outerCircleSize} flex items-center justify-center shadow-md transition-transform duration-200 group-hover:scale-105 overflow-hidden p-[3px]`}
+          className={`relative rounded-full p-[4px] bg-gradient-to-tr ${themeConfig.ringGradient} ${outerCircleSize} flex items-center justify-center shadow-md transition-transform duration-200 group-hover:scale-105`}
         >
-          {/* Avatar fills entire inner circle - no background showing */}
-          <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-            <EmployeeAvatar avatarUrl={node.avatarUrl} name={displayName} size={avatarSize} className="w-full h-full" />
+          {/* Inner White Cutout Background */}
+          <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden ring-1 ring-white/80 shadow-inner">
+            <EmployeeAvatar avatarUrl={node.avatarUrl} name={displayName} size={avatarSize} className="w-full h-full object-cover" />
           </div>
         </div>
 

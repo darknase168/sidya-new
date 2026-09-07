@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCms } from '../context/CmsContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, 
   Smartphone, 
@@ -15,6 +16,7 @@ import {
 
 export const HeroSection: React.FC = () => {
   const { data, isEditMode, setIsCmsModalOpen, setActiveCmsTab } = useCms();
+  const { isLoggedIn } = useAuth();
   const [activeAudience, setActiveAudience] = useState<'kbih' | 'jamaah'>('kbih');
 
   const scrollTo = (id: string) => {
@@ -38,7 +40,7 @@ export const HeroSection: React.FC = () => {
             <span>PT Sidya Sadaya Sejahtera • Platform Logistik Resmi</span>
           </div>
 
-          {isEditMode && (
+          {isEditMode && isLoggedIn && (
             <button
               onClick={() => {
                 setActiveCmsTab('profil');

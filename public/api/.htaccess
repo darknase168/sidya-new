@@ -1,0 +1,16 @@
+# Allow all PHP files in API folder to be accessed directly
+<IfModule mod_rewrite.c>
+  RewriteEngine Off
+</IfModule>
+
+# Enable CORS headers
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+  Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+# Allow direct access to all PHP files
+<FilesMatch "\.php$">
+  Allow from all
+</FilesMatch>

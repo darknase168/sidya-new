@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmployeeNode, ViewMode } from '../../types';
+import { EmployeeNode, ViewMode } from '../types';
 import { OrgNodeCard } from './OrgNodeCard';
 
 interface OrgChartTreeProps {
@@ -20,20 +20,9 @@ export const OrgChartTree: React.FC<OrgChartTreeProps> = ({
   // Helper to get node by id
   const getNode = (id: string) => nodes.find((n) => n.id === id);
 
-  // Build tree from actual node relationships
-  const rootNodes = nodes.filter((n) => !n.parentId);
-  
-  if (rootNodes.length === 0) return null;
-
-  // For new org structure: Commissioners at top, then Direktur Utama
-  const commissioners = nodes.filter((n) => n.level === 0);
-  const directorUtama = nodes.find((n) => n.id === 'dir-utama');
-  const executives = nodes.filter((n) => n.level === 2);
-
-  // Fallback to old structure if needed
-  const ceo = getNode('ceo') || getNode('dir-utama');
-  const mgr1 = getNode('mgr-1') || getNode('wakil-dir');
-  const mgr2 = getNode('mgr-2') || getNode('wakil-dir-i');
+  const ceo = getNode('ceo');
+  const mgr1 = getNode('mgr-1');
+  const mgr2 = getNode('mgr-2');
   const frmA = getNode('frm-a');
   const frmB = getNode('frm-b');
   const slsA = getNode('sls-a');
@@ -44,88 +33,6 @@ export const OrgChartTree: React.FC<OrgChartTreeProps> = ({
   const wrk4 = getNode('wrk-4');
   const slr1 = getNode('slr-1');
   const slr2 = getNode('slr-2');
-
-  // If we have new structure (directors + commissioners), render that
-  if (directorUtama && commissioners.length > 0) {
-    // Separate Komisaris Utama from others
-    const komUtama = commissioners.find((c) => c.id === 'kom-utama');
-    const komOthers = commissioners.filter((c) => c.id !== 'kom-utama');
-
-    return (
-      <div className="relative w-full min-w-[940px] max-w-6xl mx-auto flex flex-col items-center py-6 px-4">
-        {/* ================= KOMISARIS UTAMA (TOP) ================= */}
-        {komUtama && (
-          <>
-            <div className="flex justify-center z-20 mb-8">
-              <OrgNodeCard
-                node={komUtama}
-                viewMode={viewMode}
-                isSelected={selectedNodeId === komUtama.id}
-                isHighlighted={highlightedIds.includes(komUtama.id)}
-                onClick={onSelectNode}
-              />
-            </div>
-            {/* Connector line from Komisaris Utama down */}
-            <div className="w-[1px] h-10 border-l-2 border-dashed border-slate-400 mb-2" />
-          </>
-        )}
-
-        {/* ================= OTHER COMMISSIONERS SEJAJAR ================= */}
-        {komOthers.length > 0 && (
-          <div className="flex justify-center gap-8 sm:gap-12 mb-12 z-20">
-            {komOthers.map((commissioner) => (
-              <OrgNodeCard
-                key={commissioner.id}
-                node={commissioner}
-                viewMode={viewMode}
-                isSelected={selectedNodeId === commissioner.id}
-                isHighlighted={highlightedIds.includes(commissioner.id)}
-                onClick={onSelectNode}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Connector line from commissioners to director */}
-        <div className="w-[1px] h-12 border-l-2 border-dashed border-slate-400 mb-4" />
-
-        {/* ================= DIRECTOR LEVEL ================= */}
-        <div className="flex flex-col items-center mb-8">
-          <OrgNodeCard
-            node={directorUtama}
-            viewMode={viewMode}
-            isSelected={selectedNodeId === directorUtama.id}
-            isHighlighted={highlightedIds.includes(directorUtama.id)}
-            onClick={onSelectNode}
-          />
-          <div className="w-[1px] h-8 border-l-2 border-dashed border-slate-400" />
-        </div>
-
-        {/* ================= EXECUTIVES LEVEL ================= */}
-        {executives.length > 0 && (
-          <>
-            {/* Horizontal line connecting executives */}
-            <div className="relative flex justify-center gap-12 items-start -mt-[1px]">
-              <div className="absolute top-0" style={{ width: `${(executives.length - 1) * 220}px`, height: '1px', borderTop: '2px dashed #cbd5e1' }} />
-              
-              {executives.map((executive, idx) => (
-                <div key={executive.id} className="flex flex-col items-center">
-                  {idx > 0 && <div className="w-[1px] h-8 border-l-2 border-dashed border-slate-400" />}
-                  <OrgNodeCard
-                    node={executive}
-                    viewMode={viewMode}
-                    isSelected={selectedNodeId === executive.id}
-                    isHighlighted={highlightedIds.includes(executive.id)}
-                    onClick={onSelectNode}
-                  />
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }
 
   if (!ceo) return null;
 

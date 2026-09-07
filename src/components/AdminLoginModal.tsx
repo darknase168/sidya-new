@@ -112,12 +112,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }: Adm
             </div>
           )}
 
-          {/* Demo Credentials Info */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
-            <p className="font-medium mb-1">Demo Credentials:</p>
-            <p>Username: <span className="font-mono">admin</span></p>
-            <p>Password: <span className="font-mono">password123</span></p>
-          </div>
+
 
           {/* Submit Button */}
           <button

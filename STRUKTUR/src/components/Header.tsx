@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewMode, FilterDepartment } from '../../types';
+import { ViewMode, FilterDepartment } from '../types';
 import {
   Search,
   ZoomIn,
@@ -28,7 +28,6 @@ interface HeaderProps {
   totalMembers: number;
   companyName: string;
   onUpdateCompanyName: (name: string) => void;
-  isLoggedIn?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -46,7 +45,6 @@ export const Header: React.FC<HeaderProps> = ({
   totalMembers,
   companyName,
   onUpdateCompanyName,
-  isLoggedIn,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [titleInput, setTitleInput] = React.useState(companyName);
@@ -85,18 +83,14 @@ export const Header: React.FC<HeaderProps> = ({
                 </form>
               ) : (
                 <h1
-                  onClick={() => isLoggedIn && setIsEditingTitle(true)}
-                  className={`text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 ${
-                    isLoggedIn ? 'cursor-pointer' : 'cursor-default'
-                  } transition-colors`}
-                  title={isLoggedIn ? "Klik untuk mengubah nama perusahaan" : "Login untuk mengubah"}
+                  onClick={() => setIsEditingTitle(true)}
+                  className="text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 cursor-pointer hover:text-indigo-600 transition-colors"
+                  title="Klik untuk mengubah nama perusahaan"
                 >
                   {companyName}
-                  {isLoggedIn && (
-                    <span className="text-[11px] font-medium text-slate-500 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2 py-0.5 rounded-md transition-colors">
-                      Edit
-                    </span>
-                  )}
+                  <span className="text-[11px] font-medium text-slate-500 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2 py-0.5 rounded-md transition-colors">
+                    Edit
+                  </span>
                 </h1>
               )}
               <p className="text-[12px] font-medium text-slate-500">

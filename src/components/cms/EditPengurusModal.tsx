@@ -243,7 +243,7 @@ export const EditPengurusModal: React.FC = () => {
             />
           </div>
 
-          {/* Jabatan & Kategori Grid */}
+          {/* Jabatan & Kategori & Atasan Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
@@ -288,6 +288,39 @@ export const EditPengurusModal: React.FC = () => {
               </select>
               <p className="text-[11px] text-slate-500 mt-1">
                 Pengurus akan dikelompokkan sesuai tab dewan di halaman publik.
+              </p>
+            </div>
+          </div>
+
+          {/* Departemen & Atasan */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                Departemen / Divisi
+              </label>
+              <input
+                type="text"
+                value={formData.department || ''}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                placeholder="Contoh: Operasional & Logistik"
+                className="w-full px-4 py-2 text-sm border border-slate-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">
+                Laporan Langsung ke (Atasan)
+              </label>
+              <select
+                value={formData.parentId || ''}
+                onChange={(e) => setFormData({ ...formData, parentId: e.target.value || undefined })}
+                className="w-full px-4 py-2 text-sm border border-slate-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none bg-white"
+              >
+                <option value="">-- Tidak ada atasan (Puncak) --</option>
+                {/* Dynamically fill available superiors */}
+              </select>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Tentukan siapa atasan langsung dalam struktur organisasi.
               </p>
             </div>
           </div>

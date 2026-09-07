@@ -47,12 +47,23 @@ export const CmsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [data, setData] = useState<SidyaData>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
+      const version = localStorage.getItem('sidya_cms_version');
+      
+      // Force reset to new data if version mismatch
+      if (version !== '2.0') {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem('sidya_cms_version', '2.0');
+        return initialSidyaData;
+      }
+      
       if (stored) {
         return JSON.parse(stored);
       }
     } catch (e) {
       console.error('Failed to parse stored CMS data:', e);
+      localStorage.removeItem(STORAGE_KEY);
     }
+    localStorage.setItem('sidya_cms_version', '2.0');
     return initialSidyaData;
   });
 

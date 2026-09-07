@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { EmployeeNode, ViewMode } from '../../types';
+import { EmployeeNode, ViewMode } from '../types';
 import { EmployeeAvatar } from './EmployeeAvatar';
-import { REAL_AVATAR_PRESETS } from '../../data/orgData';
-import { useAuth } from '../../context/AuthContext';
+import { REAL_AVATAR_PRESETS } from '../data/orgData';
 import {
   X,
   Mail,
@@ -21,7 +20,6 @@ import {
   RotateCcw,
   Sparkles,
   Check,
-  Trash2,
 } from 'lucide-react';
 
 interface MemberDetailModalProps {
@@ -31,7 +29,6 @@ interface MemberDetailModalProps {
   onClose: () => void;
   onSelectNode: (node: EmployeeNode) => void;
   onUpdateNode: (updatedNode: EmployeeNode) => void;
-  onDeleteNode?: (nodeId: string) => void;
 }
 
 export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
@@ -41,9 +38,7 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
   onClose,
   onSelectNode,
   onUpdateNode,
-  onDeleteNode,
 }) => {
-  const { isLoggedIn } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<EmployeeNode>>({});
   const [photoTab, setPhotoTab] = useState<'presets' | 'upload' | 'url'>('presets');
@@ -58,10 +53,6 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
   const childNodes = allNodes.filter((n) => node.childrenIds.includes(n.id));
 
   const startEdit = () => {
-    if (!isLoggedIn) {
-      alert('Anda harus login sebagai admin untuk mengubah data.');
-      return;
-    }
     setEditForm({
       avatarUrl: node.avatarUrl,
       placeholderName: node.placeholderName,
@@ -138,19 +129,6 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
     const defaultItem = allNodes.find((n) => n.id === node.id);
     if (defaultItem) {
       setEditForm((prev) => ({ ...prev, avatarUrl: defaultItem.avatarUrl }));
-    }
-  };
-
-  const handleDelete = () => {
-    if (!isLoggedIn) {
-      alert('Anda harus login sebagai admin untuk menghapus data.');
-      return;
-    }
-
-    const confirmMessage = `Apakah Anda yakin ingin menghapus "${node.realisticName}"?\n\nJika pengurus ini memiliki bawahan, mereka akan menjadi orphaned (tidak memiliki atasan).`;
-    if (window.confirm(confirmMessage)) {
-      onDeleteNode?.(node.id);
-      onClose();
     }
   };
 
@@ -243,27 +221,14 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
 
           <div>
             {!isEditing ? (
-              isLoggedIn ? (
-                <div className="flex gap-2">
-                  <button
-                    id="edit-member-btn"
-                    onClick={startEdit}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-colors border border-transparent hover:border-indigo-100"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    Edit
-                  </button>
-                  <button
-                    id="delete-member-btn"
-                    onClick={handleDelete}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-colors border border-transparent hover:border-rose-200"
-                    title="Hapus pengurus ini"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    Hapus
-                  </button>
-                </div>
-              ) : null
+              <button
+                id="edit-member-btn"
+                onClick={startEdit}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-colors border border-transparent hover:border-indigo-100"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                Edit Data & Foto
+              </button>
             ) : (
               <div className="flex items-center gap-2">
                 <button
@@ -628,22 +593,15 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
 
               {childNodes.length > 0 && (
                 <div className="text-xs">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-slate-400 text-[11px] block">Bawahan Langsung ({childNodes.length} Orang):</span>
-                    {isLoggedIn && (
-                      <span className="text-[10px] text-slate-400">Klik untuk detail/hapus</span>
-                    )}
-                  </div>
+                  <span className="text-slate-400 text-[11px] block mb-1">Bawahan Langsung ({childNodes.length} Orang):</span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {childNodes.map((child) => (
-                      <div
+                      <button
                         key={child.id}
+                        onClick={() => onSelectNode(child)}
                         className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 hover:bg-indigo-50/50 border border-slate-200/70 hover:border-indigo-200 transition-all text-left group"
                       >
-                        <button
-                          onClick={() => onSelectNode(child)}
-                          className="flex-1 flex items-center gap-2.5 overflow-hidden"
-                        >
+                        <div className="flex items-center gap-2.5 overflow-hidden">
                           <div className="w-7 h-7 rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
                             <EmployeeAvatar
                               avatarUrl={child.avatarUrl}
@@ -657,17 +615,11 @@ export const MemberDetailModal: React.FC<MemberDetailModalProps> = ({
                             </div>
                             <div className="text-[10px] text-slate-400 truncate">{child.roleLabel}</div>
                           </div>
-                        </button>
+                        </div>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-indigo-600 flex-shrink-0" />
-                      </div>
+                      </button>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {childNodes.length === 0 && !parentNode && (
-                <div className="p-2.5 rounded-xl bg-slate-50/50 border border-slate-200/60 text-center">
-                  <p className="text-[11px] text-slate-500">Tidak ada atasan atau bawahan langsung</p>
                 </div>
               )}
             </div>
