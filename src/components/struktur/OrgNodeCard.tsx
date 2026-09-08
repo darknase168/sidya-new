@@ -18,7 +18,7 @@ export const OrgNodeCard: React.FC<OrgNodeCardProps> = ({
   onClick,
 }) => {
   // Sleek theme color definitions for rings, pins, and badges
-  const themeConfig = {
+  const colorThemes = {
     pink: {
       ringGradient: 'from-rose-500 via-rose-600 to-pink-600',
       pinColor: '#e11d48',
@@ -59,7 +59,10 @@ export const OrgNodeCard: React.FC<OrgNodeCardProps> = ({
       activeRing: 'ring-indigo-500',
       glow: 'from-sky-500 to-indigo-500',
     },
-  }[node.colorTheme];
+  };
+
+  // Get theme config with fallback to blue if colorTheme is invalid or missing
+  const themeConfig = colorThemes[node.colorTheme as keyof typeof colorThemes] || colorThemes.blue;
 
   const isLevel4 = node.level === 4;
   const isCeo = node.level === 1;
